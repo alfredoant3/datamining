@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score
 import scipy
 
 school_data = pandas.read_csv('frb_01_overall_new.csv')
-pandas.DataFrame({col: school_data[col].astype('category').cat.codes for col in school_data}, index=school_data.index)
+#pandas.DataFrame({col: school_data[col].astype('category').cat.codes for col in school_data}, index=school_data.index)
 # X features are attributes that revealed a positive correlation with risk
 # Median Dependent Parent AGI R-Value = 0.39
 # % Borrowers without a Pell Grant R-Value = 0.47
