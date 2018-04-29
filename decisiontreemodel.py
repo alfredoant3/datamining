@@ -1,49 +1,49 @@
 # -*- coding: utf-8 -*-
 
-import pandas
-import numpy 
+import pandas as pd
 from sklearn import tree
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import scipy
 
-school_data = pandas.read_csv('frb_01_overall_new.csv')
-#pandas.DataFrame({col: school_data[col].astype('category').cat.codes for col in school_data}, index=school_data.index)
-# X features are attributes that revealed a positive correlation with risk
-# Median Dependent Parent AGI R-Value = 0.39
-# % Borrowers without a Pell Grant R-Value = 0.47
-# % Dependent Borrower Count R-Value = 0.21
-# Mean Balance R-Value = 0.22
 
-#All numerical columns
-n=7
-cols = [n]
-for i in range(7,73):
-    cols.append(n+1)
-    n+=1
-    
-#X_features = school_data.iloc[:,[11,14,17,20]]
-X_features2 = school_data.iloc[:,cols]
+dataset = pd.read_csv('frb_01_overall_new2.csv')
+X = dataset.iloc[:, 4:].values
+y = dataset.iloc[:, 3].values
 
-y_target = school_data.iloc[:,3]
+#Encode categorical variables
+from sklearn.preprocessing import LabelEncoder,OneHotEncoder
+labelencoder_x1 = LabelEncoder()
+labelencoder_x2 = LabelEncoder()
+labelencoder_x3 = LabelEncoder()
+labelencoder_x4 = LabelEncoder()
+X[:,0] = labelencoder_x1.fit_transform(X[:,0])
+X[:,1] = labelencoder_x2.fit_transform(X[:,1])
+X[:,2] = labelencoder_x3.fit_transform(X[:,2])
 
+onehotencoder = OneHotEncoder(categorical_features = [2,3])
+X = onehotencoder.fit_transform(X).toarray()
 # Encode target classes to discrete values
 labelEncoder = preprocessing.LabelEncoder()
 
 # Dictionary for encoding
-labelEncoder.fit(y_target)
+labelEncoder.fit(y)
 riskyness = dict(zip(labelEncoder.classes_, labelEncoder.transform(labelEncoder.classes_)))
-print('Dictionary: '+ str(riskyness) + '\n')
+#print('Dictionary: '+ str(riskyness) + '\n')
 
-y_target = labelEncoder.fit_transform(y_target)
+y = labelEncoder.fit_transform(y)
 
 # Splitting the dataset into the Training set and Test set
-X_train, X_test, y_train, y_test = train_test_split(X_features2, y_target, 
-                                                    test_size = 0.15, random_state = 0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.15, random_state = 0)
+
+# Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
 
 #Train classifier with gini method
-classifier_gini = tree.DecisionTreeClassifier(criterion='gini', min_samples_split=320)
+classifier_gini = tree.DecisionTreeClassifier(criterion='gini', min_samples_split=350)
 
 #Fit training data to classifier
 classifier_gini = classifier_gini.fit(X_train,y_train)
@@ -52,7 +52,7 @@ classifier_gini = classifier_gini.fit(X_train,y_train)
 y_predict_gini = classifier_gini.predict(X_test)
 
 #Train classifier with entropy method
-classifier_entropy = tree.DecisionTreeClassifier(criterion='entropy', min_samples_split=320)
+classifier_entropy = tree.DecisionTreeClassifier(criterion='entropy', min_samples_split=350)
 classifier_entropy = classifier_gini.fit(X_train,y_train)
 
 #Predict with entropy method
