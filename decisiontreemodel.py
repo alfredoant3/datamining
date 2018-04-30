@@ -56,7 +56,7 @@ y_predict_gini = classifier_gini.predict(X_test)
 
 #Train classifier with entropy method
 classifier_entropy = tree.DecisionTreeClassifier(criterion='entropy', min_samples_split=350)
-classifier_entropy = classifier_gini.fit(X_train,y_train)
+classifier_entropy = classifier_entropy.fit(X_train,y_train)
 
 #Predict with entropy method
 y_predict_entropy = classifier_entropy.predict(X_test)
