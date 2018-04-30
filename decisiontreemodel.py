@@ -5,7 +5,10 @@ from sklearn import tree
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-
+from sklearn.externals.six import StringIO  
+from IPython.display import Image  
+from sklearn.tree import export_graphviz
+import pydotplus
 
 dataset = pd.read_csv('frb_01_overall_new2.csv')
 X = dataset.iloc[:, 4:].values
@@ -65,7 +68,12 @@ print('Accuracy score gini method: '+str(accuracy_gini))
 print('Accuracy score entropy method: '+str(accuracy_entropy))
 
 
-
+dot_data = StringIO()
+export_graphviz(classifier_gini, out_file=dot_data,  
+                filled=True, rounded=True,
+                special_characters=True)
+graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+Image(graph.create_png())
 
 
 
